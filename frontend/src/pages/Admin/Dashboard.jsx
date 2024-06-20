@@ -1,0 +1,97 @@
+import React ,{useState,useEffect} from 'react';
+import Sidebar from './Sidebar';
+import EventCalender from './EventCalender';
+import Announcement from './Announcement';
+import Performance from './Performance';
+import axios from 'axios';
+import {
+   AdminDashboardContainer,
+   Content,
+   TopContent,
+   BottomContent,
+   Section,
+   SectionTitle,
+   CardContainer,
+   Card,
+   CardContent,
+   CardTitle
+}from '../../styles/DashboardStyles'
+const AdminDashboard = () =>{
+   
+    const [isOpen, setIsOpen] = useState(true);
+    const [events, setEvents] = useState([]);
+    const [announcements, setAnnouncements] = useState([]);
+    const [studentPerformance, setStudentPerformance] = useState([]);
+
+    useEffect(()=>{
+        fetchEvents();
+        fetchAnnouncements();
+        fetchStudentPerformance();
+    },[]);
+
+    const fetchEvents = async () => {
+        try{
+          const response = await axios.get('http://localhost:4000/api/v1/events/getall');
+          setEvents(response.data.events || []);
+        }catch (error){
+            console.error('Error fetching Events: ', error);
+
+        }
+    };
+
+    const fetchStudentPerformance = async () => {
+        try{
+            const response = await axios.get('http://localhost:4000/api/v1/announcements/getall');
+            setEvents(response.data.announcements || []);
+
+        }catch(error){
+            console.error('Error fetching announcements: ', error);
+        }
+    }
+
+    const fetchAnnouncements = async () => {
+        try{
+            const response = await axios.get('http://localhost:4000/api/v1/performance/getall');
+            setEvents(response.data.Performance || []);
+
+        }catch(error){
+            console.error('Error fetching students performance: ', error);
+        }
+    }
+
+    return (
+      <AdminDashboardContainer>
+        <Sidebar/>
+        <Content>
+            <TopContent>
+                <Section>
+                    <SectionTitle>Overview</SectionTitle>
+                    <CardContainer>
+                        <Card>
+                            <CardTitle>Total Students</CardTitle>
+                            <CardContent>500</CardContent>
+                        </Card>
+                        <Card>
+                            <CardTitle>Total Teachers</CardTitle>
+                            <CardContent>50</CardContent>
+                        </Card>
+                        <Card>
+                            <CardTitle>Total Classes</CardTitle>
+                            <CardContent>20</CardContent>
+                        </Card>
+                    </CardContainer>
+                </Section>
+                <Section>
+                    <SectionTitle>All Events</SectionTitle>
+                </Section>
+            </TopContent>
+            <BottomContent>
+                <Performance studentPerformance = {studentPerformance}/>
+                <Announcement announcements={announcements}/>
+            </BottomContent>
+        </Content>
+      </AdminDashboardContainer>
+    )
+}
+
+export default AdminDashboard;
